@@ -3,6 +3,7 @@ from moviepy.editor import ImageSequenceClip, VideoFileClip, CompositeVideoClip
 from typing import Tuple, Dict
 from .animations import pop_up
 from .types import Transcript
+from .utils import filter_alnum
 import numpy as np
 import json
 
@@ -18,6 +19,8 @@ class Burner:
         fill: Tuple[int, int, int],
         stroke_width: float,
         stroke_fill: Tuple[int, int, int],
+        render_offset: float = 0.0,
+        filter_alnum: bool = True,
         capitalize: bool = True,
     ):
         self.video_path = video_path
@@ -27,6 +30,8 @@ class Burner:
         self.fill = fill
         self.stroke_width = stroke_width
         self.stroke_fill = stroke_fill
+        self.render_offset = render_offset
+        self.filter_alnum = filter_alnum
         self.capitalize = capitalize
 
     def _load_transcript(self, transcript_path: str) -> Transcript:
@@ -39,6 +44,8 @@ class Burner:
         return (w / 2, h / 2)
 
     def get_text_img(self, text: str) -> Image.Image:
+        if self.filter_alnum:
+            text = filter_alnum(text)
         if self.capitalize:
             text = text.upper()
         img = Image.new(mode="RGBA", size=self.video_size)
@@ -53,7 +60,6 @@ class Burner:
             stroke_width=self.stroke_width,
             stroke_fill=self.stroke_fill,
         )
-        # draw.circle(self._get_center(), 20, fill=255)
         return img
 
     def get_text_clip(
@@ -97,25 +103,8 @@ class Burner:
     def burn(self, out_path: str) -> None:
         base_clip = VideoFileClip(self.video_path)
         subtitle_clip = self.get_subtitle_clip()
+        if self.render_offset:
+            subtitle_clip = subtitle_clip.set_start(self.render_offset)
         clips = [base_clip, subtitle_clip]
         video = CompositeVideoClip(clips)
         video.write_videofile(out_path)
-
-
-# burner = Burner(
-#     video_path="sample/1.mp4",
-#     transcript_path="sample/1.json",
-#     font_path="fonts/Montserrat-Black.ttf",
-#     font_size=90,
-#     video_size=(1080, 1920),
-#     fill=(255, 255, 0),
-#     stroke_width=8,
-#     stroke_fill=(0, 0, 0),
-# )
-# burner.burn("out.mp4")
-
-# text_clip = burner.get_text_clip("Hello world", 0.5, 2)
-# text_clip.write_videofile("out.mp4")
-
-# img = burner.get_text_img("Hello world")
-# img.save("out.png")
