@@ -102,20 +102,20 @@ class Burner:
         video.write_videofile(out_path)
 
 
-burner = Burner(
-    video_path="sample/1.mp4",
-    transcript_path="sample/1.json",
-    font_path="fonts/Montserrat-Black.ttf",
-    font_size=90,
-    video_size=(1080, 1920),
-    fill=(255, 255, 0),
-    stroke_width=8,
-    stroke_fill=(0, 0, 0),
-)
+# burner = Burner(
+#     video_path="sample/1.mp4",
+#     transcript_path="sample/1.json",
+#     font_path="fonts/Montserrat-Black.ttf",
+#     font_size=90,
+#     video_size=(1080, 1920),
+#     fill=(255, 255, 0),
+#     stroke_width=8,
+#     stroke_fill=(0, 0, 0),
+# )
+# burner.burn("out.mp4")
 
 # text_clip = burner.get_text_clip("Hello world", 0.5, 2)
 # text_clip.write_videofile("out.mp4")
-burner.burn("out.mp4")
 
 # img = burner.get_text_img("Hello world")
 # img.save("out.png")
