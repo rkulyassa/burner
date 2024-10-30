@@ -33,12 +33,6 @@ class SubtitleOptions(NamedTuple):
 class SubtitleToken(NamedTuple):
     text: str
     start: float
-    end: float
-
-
-class Transcript(NamedTuple):
-    offset: float
-    subtitles: List[SubtitleToken]
 
 
 class WordSegment(TypedDict):

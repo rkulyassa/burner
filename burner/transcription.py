@@ -6,40 +6,30 @@ from shutil import rmtree
 from sys import platform
 from typing import List
 
-from ._globals import TMP_DIR
-from ._typing import RawTranscript, SubtitleToken, Transcript, PathLike, WhisperModel
+from ._typing import RawTranscript, SubtitleToken, PathLike, WhisperModel
 from ._utils import measure
 
+TMP_DIR = Path(__file__).parent.joinpath("tmp")
 
-def _parse_subtitles(
+
+def load_subtitles_from_raw_transcript(
     raw_transcript: RawTranscript,
 ) -> List[SubtitleToken]:
     word_segments = raw_transcript["word_segments"]
     subtitle_tokens = []
-    for i, word_segment in enumerate(word_segments):
+    for word_segment in word_segments:
         text = word_segment["word"]
         start = word_segment["start"]
-        if i < len(word_segments) - 1:
-            end = word_segments[i + 1]["start"]
-        else:
-            end = word_segment["end"]
-        subtitle_token = SubtitleToken(text, start, end)
+        subtitle_token = SubtitleToken(text, start)
         subtitle_tokens.append(subtitle_token)
     return subtitle_tokens
 
 
-def load_transcript_from_raw_transcript(raw_transcript: RawTranscript) -> Transcript:
-    offset = raw_transcript["word_segments"][0]["start"]
-    subtitles = _parse_subtitles(raw_transcript)
-    transcript = Transcript(offset, subtitles)
-    return transcript
-
-
-def load_transcript_from_file(transcript_path: PathLike) -> Transcript:
+def load_subtitles_from_file(transcript_path: PathLike) -> List[SubtitleToken]:
     with open(transcript_path) as f:
         raw_transcript: RawTranscript = json.load(f)
-    transcript = load_transcript_from_raw_transcript(raw_transcript)
-    return transcript
+    subtitles = load_subtitles_from_raw_transcript(raw_transcript)
+    return subtitles
 
 
 def _extract_audio(video_file: PathLike) -> Path:
@@ -64,7 +54,7 @@ def transcribe(
     video_path: PathLike,
     model_name: WhisperModel,
     language: str = "en",
-) -> Transcript:
+) -> List[SubtitleToken]:
     if os.path.exists(TMP_DIR):
         rmtree(TMP_DIR)
     os.makedirs(TMP_DIR)
@@ -89,6 +79,6 @@ def transcribe(
     subprocess.run(whisperx_command, cwd=TMP_DIR, check=True)
 
     transcript_path = audio_path.with_suffix(".json")
-    transcript = load_transcript_from_file(transcript_path)
+    subtitles = load_subtitles_from_file(transcript_path)
     rmtree(TMP_DIR)
-    return transcript
+    return subtitles
