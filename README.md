@@ -3,8 +3,10 @@
 ### Motivation
 In the modern content space, subtitling videos has become standard practice, especially for short-form content. Many existing tools for this are paywalled or limited in functionality. **burner** aims to be a FOSS alternative providing advanced subtitling capabilities and simple implementation in Python.
 
-### Concept
-**burner** uses two main libraries, [Pillow](https://python-pillow.org/) and [moviepy](https://zulko.github.io/moviepy/). The process is simple: given a transcript file, Pillow creates images of each text frame, and moviepy concatenates all the frames into a video clip, which gets burned onto an existing video. There is potential for alot of functionality here, i.e. text animations.
+### Workflow
+1. Transcribe audio with [whisperX](https://github.com/m-bain/whisperX)
+2. Create text frames with [Pillow](https://python-pillow.org/)
+3. Burn subtitles and render with [ffmpeg](https://www.ffmpeg.org/)
 
 ### Usage
 For now, download and import locally. I'll upload this to PyPI when I get around to it.
@@ -15,3 +17,9 @@ with Burner("input.mp4") as burner:
     options = SubtitleOptions(font_size=90.0, font_fill=(255, 255, 0))
     burner.burn("output.mp4", options=options)
 ```
+
+### Sample Output
+Note: accuracy processing time are dependent on your machine and the [whisper model](https://huggingface.co/collections/openai/whisper-release-6501bba2cf999715fd953013) you're running. **burner** is really only responsible for the subtitle generation.
+
+https://github.com/user-attachments/assets/f4dbbc06-6c42-49ec-a776-b25b4f9108e8
+
