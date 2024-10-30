@@ -23,8 +23,7 @@ def _parse_subtitles(
             end = word_segments[i + 1]["start"]
         else:
             end = word_segment["end"]
-        duration = end - start
-        subtitle_token = SubtitleToken(text, duration)
+        subtitle_token = SubtitleToken(text, start, end)
         subtitle_tokens.append(subtitle_token)
     return subtitle_tokens
 

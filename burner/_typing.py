@@ -32,7 +32,8 @@ class SubtitleOptions(NamedTuple):
 
 class SubtitleToken(NamedTuple):
     text: str
-    duration: float
+    start: float
+    end: float
 
 
 class Transcript(NamedTuple):
