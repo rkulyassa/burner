@@ -1,9 +1,22 @@
 import os
 
-from typing import List, NamedTuple, Tuple, TypedDict, Union
+from typing import Literal, NamedTuple, Tuple, TypedDict, Union, List
 
 
 PathLike = Union[str, bytes, os.PathLike]
+
+WhisperModel = Literal[
+    "tiny.en",
+    "tiny",
+    "base.en",
+    "base",
+    "small.en",
+    "small",
+    "medium.en",
+    "medium",
+    "large",
+    "large-v2",
+]
 
 
 class SubtitleOptions(NamedTuple):
@@ -20,6 +33,11 @@ class SubtitleOptions(NamedTuple):
 class SubtitleToken(NamedTuple):
     text: str
     duration: float
+
+
+class Transcript(NamedTuple):
+    offset: float
+    subtitles: List[SubtitleToken]
 
 
 class WordSegment(TypedDict):

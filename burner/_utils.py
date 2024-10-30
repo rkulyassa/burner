@@ -16,3 +16,7 @@ def measure(func: Callable[..., T]) -> Callable[..., T]:
         return result
 
     return wrapper
+
+
+def filter_alnum(input: str) -> str:
+    return "".join([c if c.isalnum() else " " if c == "-" else "" for c in input])

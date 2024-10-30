@@ -4,13 +4,13 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Optional, Tuple
 
 from . import animations
-from ._typing import PathLike, RawTranscript, SubtitleOptions
-from ._utils import measure
-from .transcription import load_transcript, parse_transcript, transcribe
-
-
-def _filter_alnum(input: str) -> str:
-    return "".join([c if c.isalnum() else " " if c == "-" else "" for c in input])
+from ._typing import RawTranscript, SubtitleOptions, PathLike, WhisperModel
+from ._utils import filter_alnum, measure
+from .transcription import (
+    load_transcript_from_file,
+    load_transcript_from_raw_transcript,
+    transcribe,
+)
 
 
 class Burner:
@@ -18,18 +18,19 @@ class Burner:
         self,
         video_path: PathLike,
         transcript: Optional[PathLike | RawTranscript] = None,
+        whisper_model: WhisperModel = "base",
         # @TODO: determine with ffprobe
         fps: int = 60,
         video_size: Tuple[int, int] = (1080, 1920),
     ) -> None:
         self.video_path = video_path
 
-        if type(transcript) == PathLike:
-            self.transcript = load_transcript(transcript)
+        if isinstance(transcript, PathLike):
+            self.transcript = load_transcript_from_file(transcript)
         elif type(transcript) == RawTranscript:
-            self.transcript = parse_transcript(transcript)
+            self.transcript = load_transcript_from_raw_transcript(transcript)
         else:
-            self.transcript = transcribe(video_path, compute_type="int8")
+            self.transcript = transcribe(video_path, whisper_model)
 
         self.fps = fps
         self.video_size = video_size
@@ -48,7 +49,7 @@ class Burner:
         self, text: str, scale: float, options: SubtitleOptions
     ) -> Image.Image:
         if options.filter_alnum:
-            text = _filter_alnum(text)
+            text = filter_alnum(text)
         if options.capitalize:
             text = text.upper()
         image = Image.new(mode="RGBA", size=self.video_size)
@@ -87,7 +88,7 @@ class Burner:
             "-i",
             "-",
             "-filter_complex",
-            "[0:v][1:v] overlay=0:0",
+            f"[1:v]setpts=PTS+{self.transcript.offset}[v1];[0:v][v1]overlay=0:0",
             "-map",
             "0:a",
             "-c:v",
@@ -102,8 +103,11 @@ class Burner:
         process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE)
 
         try:
-            for text, duration in self.transcript:
-                n = int(duration * self.fps)
+            # total_duration = sum()
+            # n = round()
+            for text, duration in self.transcript.subtitles:
+                # n = int(duration * self.fps)
+                n = round(duration * self.fps)
                 for i in range(n):
                     t = i / self.fps
                     img = self._get_text_image(
