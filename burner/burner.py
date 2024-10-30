@@ -31,6 +31,12 @@ class Burner:
             self.subtitles = transcribe(video_path, whisper_model)
 
         self.probe = Probe(video_path)
+        w, h = self.probe.size
+        self.positions = {
+            "top": (w / 2, h * 0.25),
+            "middle": (w / 2, h / 2),
+            "bottom": (w / 2, h * 0.75),
+        }
 
     def __enter__(self) -> "Burner":
         return self
@@ -45,12 +51,15 @@ class Burner:
             text = filter_alnum(text)
         if options.capitalize:
             text = text.upper()
+
         image = Image.new(mode="RGBA", size=self.probe.size)
         draw = ImageDraw.Draw(image)
+
         font_size = int(options.font_size * scale)
         font = ImageFont.truetype(options.font_path, font_size)
+
         draw.text(
-            xy=self.probe.center,
+            xy=self.positions[options.position],
             text=text,
             fill=options.font_fill,
             font=font,

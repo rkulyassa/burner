@@ -22,7 +22,6 @@ class Probe:
         output = self._extract("stream=width,height")
         w, h = map(int, output.split(","))
         self._size = (w, h)
-        self._center = (w / 2, h / 2)
 
     @property
     def video_path(self) -> str:
@@ -43,10 +42,6 @@ class Probe:
     @property
     def size(self) -> Tuple[int, int]:
         return self._size
-
-    @property
-    def center(self) -> Tuple[int, int]:
-        return self._center
 
     def _extract(self, target: str) -> str:
         command = [
