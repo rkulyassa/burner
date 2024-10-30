@@ -6,5 +6,6 @@ build/
 dist/
 *.egg-info/
 
+tmp
 sample
 *.mp4
