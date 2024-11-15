@@ -1,9 +1,7 @@
-import os
+from pathlib import Path
+from typing import Literal, NamedTuple, Tuple, TypedDict
 
-from typing import Literal, NamedTuple, Tuple, TypedDict, Union, List
-
-
-PathLike = Union[str, bytes, os.PathLike]
+from .globals import ROOT_DIR
 
 WhisperModel = Literal[
     "tiny.en",
@@ -21,7 +19,7 @@ WhisperModel = Literal[
 
 class SubtitleOptions(NamedTuple):
     position: Literal["top", "middle", "bottom"] = "middle"
-    font_path: PathLike = "fonts/Montserrat-Black.ttf"
+    font_path: Path = ROOT_DIR / "fonts" / "Montserrat-Black.ttf"
     font_size: float = 60.0
     font_fill: Tuple[int, int, int] = (255, 255, 255)
     stroke_width: int = 4
@@ -47,9 +45,9 @@ class Segment(TypedDict):
     start: float
     end: float
     text: str
-    words: List[WordSegment]
+    words: list[WordSegment]
 
 
 class RawTranscript(TypedDict):
-    segments: List[Segment]
-    word_segments: List[WordSegment]
+    segments: list[Segment]
+    word_segments: list[WordSegment]

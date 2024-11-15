@@ -1,20 +1,17 @@
 import json
-import os
 import subprocess
 from pathlib import Path
 from shutil import rmtree
 from sys import platform
-from typing import List
 
-from ._typing import RawTranscript, SubtitleToken, PathLike, WhisperModel
-from ._utils import measure
-
-TMP_DIR = Path(__file__).parent.joinpath("tmp")
+from .globals import TMP_DIR
+from .typing import RawTranscript, SubtitleToken, WhisperModel
+from .utils import measure
 
 
 def load_subtitles_from_raw_transcript(
     raw_transcript: RawTranscript,
-) -> List[SubtitleToken]:
+) -> list[SubtitleToken]:
     word_segments = raw_transcript["word_segments"]
     subtitle_tokens = []
     for word_segment in word_segments:
@@ -25,42 +22,41 @@ def load_subtitles_from_raw_transcript(
     return subtitle_tokens
 
 
-def load_subtitles_from_file(transcript_path: PathLike) -> List[SubtitleToken]:
+def load_subtitles_from_file(transcript_path: Path) -> list[SubtitleToken]:
     with open(transcript_path) as f:
         raw_transcript: RawTranscript = json.load(f)
     subtitles = load_subtitles_from_raw_transcript(raw_transcript)
     return subtitles
 
 
-def _extract_audio(video_file: PathLike) -> Path:
+def _extract_audio(video_file: Path) -> Path:
+    print("Extracting audio")
     out_path = TMP_DIR.joinpath("audio.wav")
+    print("===", out_path)
     command = [
         "ffmpeg",
         "-i",
-        video_file,
+        str(video_file),
         "-q:a",
         "0",
         "-map",
         "a",
         "-loglevel",
         "error",
-        out_path,
+        str(out_path),
     ]
     subprocess.run(command, check=True)
+    print("=== done")
     return out_path
 
 
-def transcribe(
-    video_path: PathLike,
+def transcribe_audio(
+    audio_path: Path,
     model_name: WhisperModel,
     language: str = "en",
-) -> List[SubtitleToken]:
-    if os.path.exists(TMP_DIR):
-        rmtree(TMP_DIR)
-    os.makedirs(TMP_DIR)
-
+) -> list[SubtitleToken]:
     compute_type = "int8" if platform == "darwin" else "float16"
-    audio_path = _extract_audio(video_path)
+
     whisperx_command = [
         "whisperx",
         "--model",
@@ -74,11 +70,19 @@ def transcribe(
         "transcribe",
         "--language",
         language,
-        audio_path,
+        str(audio_path),
     ]
+
     subprocess.run(whisperx_command, cwd=TMP_DIR, check=True)
 
     transcript_path = audio_path.with_suffix(".json")
     subtitles = load_subtitles_from_file(transcript_path)
-    rmtree(TMP_DIR)
+    return subtitles
+
+
+def transcribe_video(
+    video_path: Path, model_name: WhisperModel, language: str = "en"
+) -> list[SubtitleToken]:
+    audio_path = _extract_audio(video_path)
+    subtitles = transcribe_audio(audio_path, model_name, language)
     return subtitles

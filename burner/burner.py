@@ -1,34 +1,39 @@
 import numpy as np
 import subprocess
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from typing import Optional
 
 from . import animations
+from .globals import TMP_DIR
 from .probe import Probe
-from ._typing import RawTranscript, SubtitleOptions, PathLike, WhisperModel
-from ._utils import filter_alnum, measure
+from .typing import RawTranscript, SubtitleOptions, WhisperModel
+from .utils import filter_alnum, measure
 from .transcription import (
     load_subtitles_from_file,
     load_subtitles_from_raw_transcript,
-    transcribe,
+    transcribe_video,
 )
 
 
 class Burner:
     def __init__(
         self,
-        video_path: PathLike,
-        transcript: Optional[PathLike | RawTranscript] = None,
+        video_path: Path,
+        transcript: Optional[Path | RawTranscript] = None,
         whisper_model: WhisperModel = "base",
     ) -> None:
         self.video_path = video_path
 
-        if isinstance(transcript, PathLike):
+        if not TMP_DIR.exists():
+            TMP_DIR.mkdir()
+
+        if isinstance(transcript, Path):
             self.subtitles = load_subtitles_from_file(transcript)
         elif type(transcript) == RawTranscript:
             self.subtitles = load_subtitles_from_raw_transcript(transcript)
         else:
-            self.subtitles = transcribe(video_path, whisper_model)
+            self.subtitles = transcribe_video(video_path, whisper_model)
 
         self.probe = Probe(video_path)
         w, h = self.probe.size

@@ -7,8 +7,8 @@ def _cubic_bezier(t: float, p0: float, p1: float, p2: float, p3: float) -> float
     )
 
 
-def pop(t: float, dur: float = 0.15) -> float:
+def pop(t: float, amp: float = 0.2, dur: float = 0.15) -> float:
     if t <= dur:
-        return _cubic_bezier(t / dur, 0.8, 1.2, 1.05, 1)
+        return _cubic_bezier(t / dur, 1 - amp, 1 + amp, 1, 1)
     else:
         return 1.0

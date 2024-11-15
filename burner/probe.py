@@ -1,7 +1,6 @@
 import subprocess
-from typing import Tuple, Any
-
-from ._typing import PathLike
+from pathlib import Path
+from typing import Tuple
 
 
 class Probe:
@@ -9,7 +8,7 @@ class Probe:
     Wrapper for ffprobe commands
     """
 
-    def __init__(self, video_path: PathLike) -> None:
+    def __init__(self, video_path: Path) -> None:
         self._video_path = video_path
 
         output = self._extract("stream=r_frame_rate")
