@@ -31,9 +31,9 @@ class Burner:
         else:
             self.subtitles = transcribe_video(video_path, whisper_model)
 
-        self.probe = Probe(video_path)
-        w, h = self.probe.size
-        self.positions = {
+        self._probe = Probe(video_path)
+        w, h = self._probe.size
+        self._positions = {
             "top": (w / 2, h * 0.25),
             "middle": (w / 2, h / 2),
             "bottom": (w / 2, h * 0.75),
@@ -56,14 +56,14 @@ class Burner:
         if options.capitalize:
             text = text.upper()
 
-        image = Image.new(mode="RGBA", size=self.probe.size)
+        image = Image.new(mode="RGBA", size=self._probe.size)
         draw = ImageDraw.Draw(image)
 
         font_size = int(options.font_size * scale)
         font = ImageFont.truetype(options.font_path, font_size)
 
         draw.text(
-            xy=self.positions[options.position],
+            xy=self._positions[options.position],
             text=text,
             fill=options.font_fill,
             font=font,
@@ -89,7 +89,7 @@ class Burner:
             "-s",
             f"1080x1920",
             "-framerate",
-            str(self.probe.fps),
+            str(self._probe.fps),
             "-i",
             "-",
             "-filter_complex",
@@ -108,16 +108,16 @@ class Burner:
         ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE)
 
         blank_frame_bytes = np.zeros(
-            (self.probe.size[0], self.probe.size[1], 4), dtype=np.uint8
+            (self._probe.size[0], self._probe.size[1], 4), dtype=np.uint8
         ).tobytes()
 
         try:
-            for n in range(self.probe.frame_count):
+            for n in range(self._probe.frame_count):
                 subtitle_token = max(
                     (
                         token
                         for token in self.subtitles
-                        if n >= round(token.start * self.probe.fps)
+                        if n >= round(token.start * self._probe.fps)
                     ),
                     key=lambda token: token.start,
                     default=None,
@@ -125,8 +125,8 @@ class Burner:
 
                 if subtitle_token:
                     text, start = subtitle_token
-                    start_frame = round(start * self.probe.fps)
-                    t = (n - start_frame) / self.probe.fps
+                    start_frame = round(start * self._probe.fps)
+                    t = (n - start_frame) / self._probe.fps
                     img = self._get_text_image(
                         text, scale=animations.pop(t), options=options
                     )
