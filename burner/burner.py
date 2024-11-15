@@ -2,7 +2,6 @@ import numpy as np
 import subprocess
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from typing import Optional
 
 from . import animations
 from .globals import TMP_DIR
@@ -20,13 +19,10 @@ class Burner:
     def __init__(
         self,
         video_path: Path,
-        transcript: Optional[Path | RawTranscript] = None,
+        transcript: Path | RawTranscript | None = None,
         whisper_model: WhisperModel = "base",
     ) -> None:
         self.video_path = video_path
-
-        if not TMP_DIR.exists():
-            TMP_DIR.mkdir()
 
         if isinstance(transcript, Path):
             self.subtitles = load_subtitles_from_file(transcript)
@@ -44,6 +40,9 @@ class Burner:
         }
 
     def __enter__(self) -> "Burner":
+        if not TMP_DIR.exists():
+            TMP_DIR.mkdir()
+
         return self
 
     def __exit__(self, *args: object) -> None:
@@ -76,7 +75,7 @@ class Burner:
         return image
 
     def burn(
-        self, out_path: str = "out.mp4", options: SubtitleOptions = SubtitleOptions()
+        self, out_path: Path, options: SubtitleOptions = SubtitleOptions()
     ) -> None:  # @TODO: add animation parameter
 
         ffmpeg_command = [
@@ -103,7 +102,7 @@ class Burner:
             "copy",
             "-loglevel",
             "error",
-            out_path,
+            str(out_path),
         ]
 
         ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE)

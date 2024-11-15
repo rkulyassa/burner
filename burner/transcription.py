@@ -1,7 +1,6 @@
 import json
 import subprocess
 from pathlib import Path
-from shutil import rmtree
 from sys import platform
 
 from .globals import TMP_DIR
@@ -30,9 +29,7 @@ def load_subtitles_from_file(transcript_path: Path) -> list[SubtitleToken]:
 
 
 def _extract_audio(video_file: Path) -> Path:
-    print("Extracting audio")
     out_path = TMP_DIR.joinpath("audio.wav")
-    print("===", out_path)
     command = [
         "ffmpeg",
         "-i",
@@ -43,10 +40,10 @@ def _extract_audio(video_file: Path) -> Path:
         "a",
         "-loglevel",
         "error",
+        "-y",
         str(out_path),
     ]
     subprocess.run(command, check=True)
-    print("=== done")
     return out_path
 
 
