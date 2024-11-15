@@ -87,7 +87,7 @@ class Burner:
             "-pix_fmt",
             "rgba",
             "-s",
-            f"1080x1920",
+            f"{self._probe.size[0]}x{self._probe.size[1]}",
             "-framerate",
             str(self._probe.fps),
             "-i",
@@ -102,6 +102,7 @@ class Burner:
             "copy",
             "-loglevel",
             "error",
+            "-y",
             str(out_path),
         ]
 
