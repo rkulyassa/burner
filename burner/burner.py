@@ -18,20 +18,20 @@ from .transcription import (
 class Burner:
     def __init__(
         self,
-        video_path: Path,
+        video_file: Path,
         transcript: Path | RawTranscript | None = None,
         whisper_model: WhisperModel = "base",
     ) -> None:
-        self.video_path = video_path
+        self.video_file = video_file
 
         if isinstance(transcript, Path):
             self.subtitles = load_subtitles_from_file(transcript)
         elif type(transcript) == RawTranscript:
             self.subtitles = load_subtitles_from_raw_transcript(transcript)
         else:
-            self.subtitles = transcribe_video(video_path, whisper_model)
+            self.subtitles = transcribe_video(video_file, whisper_model)
 
-        self._probe = Probe(video_path)
+        self._probe = Probe(video_file)
         w, h = self._probe.size
         self._positions = {
             "top": (w / 2, h * 0.25),
@@ -81,7 +81,7 @@ class Burner:
         ffmpeg_command = [
             "ffmpeg",
             "-i",
-            str(self.video_path),
+            str(self.video_file),
             "-f",
             "rawvideo",
             "-pix_fmt",

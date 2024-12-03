@@ -8,8 +8,8 @@ class Probe:
     Wrapper for ffprobe commands
     """
 
-    def __init__(self, video_path: Path) -> None:
-        self._video_path = video_path
+    def __init__(self, video_file: Path) -> None:
+        self._video_file = video_file
 
         output = self._extract("stream=r_frame_rate")
         num, denom = map(int, output.split("/"))
@@ -23,8 +23,8 @@ class Probe:
         self._size = (w, h)
 
     @property
-    def video_path(self) -> str:
-        return self._video_path
+    def video_file(self) -> str:
+        return self._video_file
 
     @property
     def fps(self) -> float:
@@ -53,7 +53,7 @@ class Probe:
             target,
             "-of",
             "csv=p=0",
-            str(self._video_path),
+            str(self._video_file),
         ]
         output = subprocess.check_output(command, text=True).strip()
         return output

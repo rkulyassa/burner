@@ -78,8 +78,8 @@ def transcribe_audio(
 
 
 def transcribe_video(
-    video_path: Path, model_name: WhisperModel, language: str = "en"
+    video_file: Path, model_name: WhisperModel, language: str = "en"
 ) -> list[SubtitleToken]:
-    audio_path = _extract_audio(video_path)
+    audio_path = _extract_audio(video_file)
     subtitles = transcribe_audio(audio_path, model_name, language)
     return subtitles
