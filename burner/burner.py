@@ -76,7 +76,9 @@ class Burner:
 
     def burn(
         self, out_path: Path, options: SubtitleOptions = SubtitleOptions()
-    ) -> None:  # @TODO: add animation parameter
+    ) -> None:
+        # TODO: add animation parameter
+        # TODO: allow user to specify output format. for now, it's prores
 
         ffmpeg_command = [
             "ffmpeg",
@@ -85,9 +87,9 @@ class Burner:
             "-f",
             "rawvideo",
             "-pix_fmt",
-            "rgba",
+            "rgba", # prores 4 expects explicit pix_fmt, as pillow frames are made in rgba
             "-s",
-            f"{self._probe.size[0]}x{self._probe.size[1]}",
+            f"{self._probe.size[0]}x{self._probe.size[1]}", # size has to be explicitly defined when re-encoding
             "-framerate",
             str(self._probe.fps),
             "-i",
@@ -95,18 +97,22 @@ class Burner:
             "-filter_complex",
             f"[1:v]setpts=PTS+{options.render_offset}/TB[v1];[0:v][v1]overlay=0:0",
             "-map",
-            "0:a",
+            "0:a?",
             "-c:v",
-            "libx264",
+            "prores_ks", # re-encoding required when piping input to filter_complex
+            "-profile:v",
+            "4", # prores 4 is used, which supports alpha, as opposed to prores 3
             "-c:a",
             "copy",
-            "-loglevel",
-            "error",
+            "-shortest",
+            # "-loglevel",
+            # "error",
             "-y",
             str(out_path),
         ]
 
         ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE)
+        # ffmpeg_process = subprocess.Popen(ffmpeg_command, stdin=subprocess.PIPE, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
         blank_frame_bytes = np.zeros(
             (self._probe.size[0], self._probe.size[1], 4), dtype=np.uint8

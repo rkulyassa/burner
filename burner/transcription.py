@@ -28,16 +28,15 @@ def load_subtitles_from_file(transcript_path: Path) -> list[SubtitleToken]:
     return subtitles
 
 
-def _extract_audio(video_file: Path) -> Path:
-    out_path = TMP_DIR.joinpath("audio.wav")
+def _extract_audio(video_file: Path) -> Path: # TODO: dynamically handle audio codec based on probe. only supports aac for now
+    out_path = TMP_DIR.joinpath("audio.aac")
     command = [
         "ffmpeg",
         "-i",
         str(video_file),
-        "-q:a",
-        "0",
-        "-map",
-        "a",
+        "-vn",
+        "-acodec",
+        "copy",
         "-loglevel",
         "error",
         "-y",
