@@ -104,7 +104,7 @@ class Burner:
             "4", # prores 4 is used, which supports alpha, as opposed to prores 3
             "-c:a",
             "copy",
-            "-shortest",
+            # "-shortest",
             # "-loglevel",
             # "error",
             "-y",

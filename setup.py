@@ -12,5 +12,5 @@ setup(
     author="Ryan Kulyassa",
     author_email="rkulyassa@gmail.com",
     packages=find_packages(),
-    install_requires=["pillow==10.4.0", "moviepy==1.0.3", "numpy==1.26.4"],
+    install_requires=["numpy>=1.14.5"],
 )
