@@ -1,5 +1,6 @@
-from burner.version import __version__
 from setuptools import setup, find_packages
+
+__version__ = "0.1.2"
 
 setup(
     name="burner",
@@ -12,5 +13,5 @@ setup(
     author="Ryan Kulyassa",
     author_email="rkulyassa@gmail.com",
     packages=find_packages(),
-    install_requires=["numpy>=1.14.5"],
+    install_requires=["numpy"],
 )

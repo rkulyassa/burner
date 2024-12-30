@@ -80,6 +80,10 @@ class Burner:
         # TODO: add animation parameter
         # TODO: allow user to specify output format. for now, it's prores
 
+        # for workflows that involve manual editing of the subtitles prior to burning
+        # theoretically this can be handled better
+        self.subtitles = load_subtitles_from_file(Path("/tmp/audio.json"))
+
         ffmpeg_command = [
             "ffmpeg",
             "-i",
@@ -87,9 +91,9 @@ class Burner:
             "-f",
             "rawvideo",
             "-pix_fmt",
-            "rgba", # prores 4 expects explicit pix_fmt, as pillow frames are made in rgba
+            "rgba",  # prores 4 expects explicit pix_fmt, as pillow frames are made in rgba
             "-s",
-            f"{self._probe.size[0]}x{self._probe.size[1]}", # size has to be explicitly defined when re-encoding
+            f"{self._probe.size[0]}x{self._probe.size[1]}",  # size has to be explicitly defined when re-encoding
             "-framerate",
             str(self._probe.fps),
             "-i",
@@ -99,9 +103,9 @@ class Burner:
             "-map",
             "0:a?",
             "-c:v",
-            "prores_ks", # re-encoding required when piping input to filter_complex
+            "prores_ks",  # re-encoding required when piping input to filter_complex
             "-profile:v",
-            "4", # prores 4 is used, which supports alpha, as opposed to prores 3
+            "4",  # prores 4 is used, which supports alpha, as opposed to prores 3
             "-c:a",
             "copy",
             # "-shortest",
