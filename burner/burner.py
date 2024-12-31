@@ -7,7 +7,7 @@ from . import animations
 from .globals import TMP_DIR
 from .probe import Probe
 from .typing import RawTranscript, SubtitleOptions, WhisperModel
-from .utils import filter_alnum, measure
+from .utils import filter_chars, measure
 from .transcription import (
     load_subtitles_from_file,
     load_subtitles_from_raw_transcript,
@@ -51,8 +51,8 @@ class Burner:
     def _get_text_image(
         self, text: str, scale: float, options: SubtitleOptions
     ) -> Image.Image:
-        if options.filter_alnum:
-            text = filter_alnum(text)
+        if options.filter_chars:
+            text = filter_chars(text)
         if options.capitalize:
             text = text.upper()
 

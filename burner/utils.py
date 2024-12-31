@@ -18,5 +18,9 @@ def measure(func: Callable[..., T]) -> Callable[..., T]:
     return wrapper
 
 
-def filter_alnum(input: str) -> str:
-    return "".join([c if c.isalnum() else " " if c == "-" else "" for c in input])
+# can be provided as an option in the future
+restricted_chars = [".", ","]
+
+
+def filter_chars(input: str) -> str:
+    return "".join([c if c not in restricted_chars else " " for c in input])
