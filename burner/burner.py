@@ -82,7 +82,7 @@ class Burner:
 
         # for workflows that involve manual editing of the subtitles prior to burning
         # theoretically this can be handled better
-        self.subtitles = load_subtitles_from_file(Path("/tmp/audio.json"))
+        # self.subtitles = load_subtitles_from_file(Path("/tmp/audio.json"))
 
         ffmpeg_command = [
             "ffmpeg",

@@ -19,7 +19,7 @@ WhisperModel = Literal[
 
 class SubtitleOptions(NamedTuple):
     position: Literal["top", "middle", "bottom"] = "middle"
-    font_path: Path = ROOT_DIR / "fonts" / "BebasNeue-Regular.ttf"
+    font_path: Path = ROOT_DIR / "fonts" / "Anton-Regular.ttf"
     font_size: float = 60.0
     font_fill: Tuple[int, int, int] = (255, 255, 255)
     stroke_width: int = 4
