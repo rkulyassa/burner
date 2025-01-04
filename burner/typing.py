@@ -24,6 +24,7 @@ class SubtitleOptions(NamedTuple):
     font_fill: Tuple[int, int, int] = (255, 255, 255)
     stroke_width: int = 4
     stroke_fill: Tuple[int, int, int] = (0, 0, 0)
+    highlight_colors: dict[int, tuple] = {1: (255, 255, 0)}
     render_offset: float = 0.0
     filter_chars: bool = True
     capitalize: bool = True
@@ -32,13 +33,15 @@ class SubtitleOptions(NamedTuple):
 class SubtitleToken(NamedTuple):
     text: str
     start: float
+    highlight: int
 
 
 class WordSegment(TypedDict):
     word: str
     start: float
     end: float
-    score: float
+    highlight: int | None
+    score: float | None
 
 
 class Segment(TypedDict):

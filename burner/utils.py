@@ -23,4 +23,4 @@ restricted_chars = [".", ","]
 
 
 def filter_chars(input: str) -> str:
-    return "".join([c if c not in restricted_chars else " " for c in input])
+    return "".join([c if c not in restricted_chars else "" for c in input])

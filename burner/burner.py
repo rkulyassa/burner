@@ -49,7 +49,7 @@ class Burner:
         return
 
     def _get_text_image(
-        self, text: str, scale: float, options: SubtitleOptions
+        self, text: str, scale: float, highlight: int, options: SubtitleOptions
     ) -> Image.Image:
         if options.filter_chars:
             text = filter_chars(text)
@@ -62,10 +62,14 @@ class Burner:
         font_size = int(options.font_size * scale)
         font = ImageFont.truetype(options.font_path, font_size)
 
+        fill = options.font_fill
+        if highlight in options.highlight_colors:
+            fill = options.highlight_colors[highlight]
+
         draw.text(
             xy=self._positions[options.position],
             text=text,
-            fill=options.font_fill,
+            fill=fill,
             font=font,
             anchor="mm",
             language="en",
@@ -135,11 +139,14 @@ class Burner:
                 )
 
                 if subtitle_token:
-                    text, start = subtitle_token
+                    text, start, highlight = subtitle_token
                     start_frame = round(start * self._probe.fps)
                     t = (n - start_frame) / self._probe.fps
                     img = self._get_text_image(
-                        text, scale=animations.pop(t), options=options
+                        text,
+                        scale=animations.pop(t),
+                        highlight=highlight,
+                        options=options,
                     )
                     img_bytes = np.array(img).tobytes()
                 else:

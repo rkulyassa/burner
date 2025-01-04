@@ -16,7 +16,8 @@ def load_subtitles_from_raw_transcript(
     for word_segment in word_segments:
         text = word_segment["word"]
         start = word_segment["start"]
-        subtitle_token = SubtitleToken(text, start)
+        highlight = word_segment["highlight"]
+        subtitle_token = SubtitleToken(text, start, highlight)
         subtitle_tokens.append(subtitle_token)
     return subtitle_tokens
 
@@ -28,7 +29,11 @@ def load_subtitles_from_file(transcript_path: Path) -> list[SubtitleToken]:
     return subtitles
 
 
-def _extract_audio(video_file: Path) -> Path: # TODO: dynamically handle audio codec based on probe. only supports aac for now
+def _extract_audio(
+    video_file: Path,
+) -> (
+    Path
+):  # TODO: dynamically handle audio codec based on probe. only supports aac for now
     out_path = TMP_DIR.joinpath("audio.aac")
     command = [
         "ffmpeg",
