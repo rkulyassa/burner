@@ -96,6 +96,10 @@ class Burner:
             "rawvideo",
             "-pix_fmt",
             "rgba",  # prores 4 expects explicit pix_fmt, as pillow frames are made in rgba
+            # "-color_trc", # set transfer characteristics - not applicable for all pipelines
+            # "bt709",
+            # "-colorspace", # set matrix coefficients - not applicable for all pipelines
+            # "bt709",
             "-s",
             f"{self._probe.size[0]}x{self._probe.size[1]}",  # size has to be explicitly defined when re-encoding
             "-framerate",
@@ -114,6 +118,7 @@ class Burner:
             "copy",
             # "-shortest",
             # "-loglevel",
+            # "debug",
             # "error",
             "-y",
             str(out_path),
