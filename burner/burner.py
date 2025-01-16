@@ -21,6 +21,7 @@ class Burner:
         video_file: Path,
         transcript: Path | RawTranscript | None = None,
         whisper_model: WhisperModel = "base",
+        use_cpu: bool = False
     ) -> None:
         self.video_file = video_file
 
@@ -29,7 +30,7 @@ class Burner:
         elif type(transcript) == RawTranscript:
             self.subtitles = load_subtitles_from_raw_transcript(transcript)
         else:
-            self.subtitles = transcribe_video(video_file, whisper_model)
+            self.subtitles = transcribe_video(video_file, whisper_model, cpu=use_cpu)
 
         self._probe = Probe(video_file)
         w, h = self._probe.size
@@ -60,7 +61,7 @@ class Burner:
         draw = ImageDraw.Draw(image)
 
         font_size = int(options.font_size * scale)
-        font = ImageFont.truetype(options.font_path, font_size)
+        font = ImageFont.truetype(options.font_path, font_size, layout_engine=ImageFont.Layout.RAQM)
 
         fill = options.font_fill
         if highlight in options.highlight_colors:
@@ -158,6 +159,8 @@ class Burner:
                     img_bytes = blank_frame_bytes
 
                 ffmpeg_process.stdin.write(img_bytes)
+        except BrokenPipeError:
+            print("Error! Please use an output container that supports the ProRes codec (like .mov)")
         finally:
             ffmpeg_process.stdin.close()
             ffmpeg_process.wait()

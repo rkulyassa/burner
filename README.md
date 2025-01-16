@@ -15,7 +15,7 @@ from burner import Burner, SubtitleOptions
 
 with Burner("input.mp4") as burner:
     options = SubtitleOptions(font_size=90.0, font_fill=(255, 255, 0))
-    burner.burn("output.mp4", options=options)
+    burner.burn("output.mov", options=options)
 ```
 
 ### Sample Output
