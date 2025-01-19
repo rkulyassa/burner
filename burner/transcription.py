@@ -16,7 +16,7 @@ def load_subtitles_from_raw_transcript(
     for word_segment in word_segments:
         text = word_segment["word"]
         start = word_segment["start"]
-        highlight = word_segment["highlight"]
+        highlight = word_segment["highlight"] if "highlight" in word_segment else 0 # checks for highlight in case whisper doesn't generate any
         subtitle_token = SubtitleToken(text, start, highlight)
         subtitle_tokens.append(subtitle_token)
     return subtitle_tokens
@@ -55,6 +55,7 @@ def transcribe_audio(
     audio_path: Path,
     model_name: WhisperModel,
     language: str = "en",
+    cpu: bool = False
 ) -> list[SubtitleToken]:
     compute_type = "int8" if platform == "darwin" else "float16"
 
@@ -63,7 +64,7 @@ def transcribe_audio(
         "--model",
         model_name,
         "--compute_type",
-        compute_type,
+        compute_type if not cpu else "int8",
         "--output_format",
         "json",
         "--suppress_numerals",
@@ -71,9 +72,10 @@ def transcribe_audio(
         "transcribe",
         "--language",
         language,
+        "--device",
+        "cpu" if cpu else "cuda",
         str(audio_path),
     ]
-
     subprocess.run(whisperx_command, cwd=TMP_DIR, check=True)
 
     transcript_path = audio_path.with_suffix(".json")
@@ -82,8 +84,8 @@ def transcribe_audio(
 
 
 def transcribe_video(
-    video_file: Path, model_name: WhisperModel, language: str = "en"
+    video_file: Path, model_name: WhisperModel, language: str = "en", cpu: bool = False
 ) -> list[SubtitleToken]:
     audio_path = _extract_audio(video_file)
-    subtitles = transcribe_audio(audio_path, model_name, language)
+    subtitles = transcribe_audio(audio_path, model_name, language, cpu)
     return subtitles
