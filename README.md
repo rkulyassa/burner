@@ -9,7 +9,6 @@ In the modern content space, subtitling videos has become standard practice, esp
 3. Burn subtitles and render with [ffmpeg](https://www.ffmpeg.org/)
 
 ### Usage
-For now, download and import locally. I'll upload this to PyPI when I get around to it.
 ```python
 from burner import Burner, SubtitleOptions
 
