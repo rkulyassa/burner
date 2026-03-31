@@ -18,7 +18,7 @@ with Burner("input.mp4") as burner:
 ```
 
 ### Sample Output
-Note: accuracy processing time are dependent on your machine and the [whisper model](https://huggingface.co/collections/openai/whisper-release-6501bba2cf999715fd953013) you're running. **burner** is really only responsible for the subtitle generation.
+Note: accuracy and processing time are dependent on your machine and the [whisper model](https://huggingface.co/collections/openai/whisper-release-6501bba2cf999715fd953013) you're running. **burner** is really only responsible for the rendering.
 
 https://github.com/user-attachments/assets/f4dbbc06-6c42-49ec-a776-b25b4f9108e8
 
